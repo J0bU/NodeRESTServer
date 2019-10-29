@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // NOS PERMITE USAR LA RUTA DE USUARIO QUE ESTÁ EN LA RUTA routes/usuario
-app.use(require('./routes/usuario'));
+app.use(require('./routes/index'));
 
 
 // USANDO EXPRESS PARA EL PUERTO, ES DECIR, ACÁ TENEMOS LA ESCUCHA AL PUERTO LOCAL 

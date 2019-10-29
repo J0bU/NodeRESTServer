@@ -11,12 +11,15 @@ const _ = require('underscore');
 // ESTA VARIABLE NOS PERMITE DEFINIR UN OBJETO USUARIO QUE TENDRÁ EL MODELO ESPECIFICADO
 // PARA LUEGO GUARDAR EN LA BASE DE DATOS DE MONGODB SIGUIEDO ESTE MODELO
 const Usuario = require('../models/usuario'); 
+const {verificaToken, verificaRol} = require('../middlewares/autenticacion');
 
 const app = express();
 
 
-app.get("/usuario", (req, res) => {
-
+app.get("/usuario", verificaToken , (req, res) => {
+    
+    //NEXT: EJECUTA TODO LO QUE SIGUE LUEGO DE PASAR POR VERIFICATOKEN
+  
     let desde = req.query.desde || 0 ; // VARIABLE DESDE PUEDE VENIR DE LA PETICIÓN GET:
     // EN CASO CONTRARIO TOMARÁ LA VARIABLE DESDE COMO 0.
 
@@ -26,7 +29,7 @@ app.get("/usuario", (req, res) => {
     limite = Number(limite);
 
     // OBTENER USUARIOS: POR MEDIO DEL ESQUEMA ES QUE PODREMOS OBTENER TODOS LOS USUARIOS.
-    Usuario.find({  role: 'USER_ROLE', estado: true}, 'nombre email role estado google img') /* ACÁ DENTRO SE ESPECIFICA LA CONDICIÓN DE BÚSQUEDA */
+    Usuario.find({  estado: true}, 'nombre email role estado google img') /* ACÁ DENTRO SE ESPECIFICA LA CONDICIÓN DE BÚSQUEDA */
         .skip(desde) // SALTAMOS LOS PRIMEROS CINCO REGISTROS
         .limit(limite) // PAGINAMOS SÓLAMENTE CINCO REGISTROS
         .exec( (error, usuariosDB) => {
@@ -38,7 +41,7 @@ app.get("/usuario", (req, res) => {
                 });
             }
 
-            Usuario.count({role: 'USER_ROLE', estado: true}, (error, conteo) => {
+            Usuario.count({estado: true}, (error, conteo) => {
                 
                 res.json({
                     ok: true,
@@ -54,7 +57,7 @@ app.get("/usuario", (req, res) => {
 
 // MÉTODO POST DE LA API REST
 
-app.post("/usuario", (req, res) => {
+app.post("/usuario", [verificaToken,  verificaRol], (req, res) => {
     // res.json("MÉTODOPOST");
 
     let body = req.body;
@@ -92,7 +95,7 @@ app.post("/usuario", (req, res) => {
 // MÉTODO PUT DE LA API REST
 // SE BUSCARÁ POR EL ID PROPORCIONADO, Y SE USARÁ PARA ACTUALIZAR UN REGISTRO EN LA BD
 
-app.put("/usuario/:id", (req, res) => {
+app.put("/usuario/:id", [verificaToken, verificaRol], (req, res) => {
 
     // SE OBTIENE TANTO EL ID COMO EL CUERPO DE DICHO ID
     let identificador = req.params.id
@@ -122,7 +125,7 @@ app.put("/usuario/:id", (req, res) => {
 
 // MÉTODO DELETE DE LA API REST
 
-app.delete("/usuario/:id", (req, res) => {
+app.delete("/usuario/:id", [verificaToken, verificaRol], (req, res) => {
     
     //HAY DOS FORMAS DE ELIMINAR UN REGISTRO: FÍSICAMENTE O SÓLO PARCIALMENTE
     //FÍSICAMENTE:
