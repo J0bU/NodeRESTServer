@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
+
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 require('./config/config'); //VARIABLES GLOBALES!
 
 // parse application/x-www-form-urlencoded
@@ -9,51 +11,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+// NOS PERMITE USAR LA RUTA DE USUARIO QUE ESTÁ EN LA RUTA routes/usuario
+app.use(require('./routes/usuario'));
 
 
-app.get("/usuario", (req, res) => {
-    res.json("MÉTODOGET");
-});
-
-app.post("/usuario", (req, res) => {
-    // res.json("MÉTODOPOST");
-
-    let body = req.body;
-
-    if(body.nombre === ""){
-        /* 
-        Acá usamos el status para envíar el código de respuesta
-        además aplicamos un json() que nos permitirá enviarle información al usuario */
-
-        res.status(400).json({
-            ok: false,
-            comment: "Es necesario llenar el campo del nombre"
-        }) 
-
-    }else {
-        res.status(200).json({
-            ok: true,
-            comment: "Se pudo crear el usuario, tiene los datos completos",
-            persona: body
-        });
-    }
-
-});
-
-app.put("/usuario/:id", (req, res) => {
-
-    let identificador = req.params.id
-    res.json({
-        id: identificador
-    });
-});
-
-app.delete("/usuario", (req, res) => {
-    res.json("MÉTODODELETE");
-});
-
-
+// USANDO EXPRESS PARA EL PUERTO, ES DECIR, ACÁ TENEMOS LA ESCUCHA AL PUERTO LOCAL 
 
 app.listen(process.env.PORT, () => {
     console.log("EscuchandoPuerto", process.env.PORT);
+});
+
+// CONEXIÓN A LA BASE DE DATOS POR MEDIO DE MONGOOSE
+
+mongoose.connect(process.env.URLDB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex:  true
+}, (error, resp) => {
+    if(error) throw error;
+    else console.log("DB ONLINE");
 });
