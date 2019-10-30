@@ -16,6 +16,9 @@ app.get('/categoria', verificaToken, (req, res) => {
 
     //APAREZCAN TODAS LAS CATEGORÍAS
     Categoria.find({})
+        .sort('descripcion') // ORDENA POR DESCRIPCIÓN ALFABÉTICAMENTE
+        .populate('usuario', 'nombre email') //POPULATE ME PERMITE MOSTRAR LOS DATOS A LA REFERENCIA QUE HACE CATEGORÍA
+        // ADEMÁS SE PUEDEN ESEPECIFICAR LOS CAMPOS QUE YO DESEO DEL USUARIO
         .exec((error, categorias) => {
 
             if (error) {
