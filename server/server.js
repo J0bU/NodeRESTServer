@@ -8,13 +8,13 @@ require('./config/config'); //VARIABLES GLOBALES!
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
- 
+
 // parse application/json
 app.use(bodyParser.json());
 
 //HABILITAR LA CARPETA PUBLIC
 
-app.use(express.static(path.resolve(__dirname , '../public')));
+app.use(express.static(path.resolve(__dirname, '../public')));
 
 // NOS PERMITE USAR LA RUTA DE USUARIO QUE ESTÁ EN LA RUTA routes/usuario
 app.use(require('./routes/index'));
@@ -29,10 +29,10 @@ app.listen(process.env.PORT, () => {
 // CONEXIÓN A LA BASE DE DATOS POR MEDIO DE MONGOOSE
 
 mongoose.connect(process.env.URLDB, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex:  true
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
 }, (error, resp) => {
-    if(error) throw error;
+    if (error) throw error;
     else console.log("DB ONLINE");
 });
