@@ -57,26 +57,59 @@ app.get('/producto/:id', verificaToken, (req, res) => {
 
     Producto.findById(identificador, (error, productoDB) => {
 
-        if (error) {
-            return res.status(500).json({
-                ok: false,
-                error
-            });
-        }
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
 
-        if (!productoDB) {
-            return res.status(400).json({
-                ok: false,
-                error: error
-            });
-        }
+            if (!productoDB) {
+                return res.status(400).json({
+                    ok: false,
+                    error: error
+                });
+            }
 
-        res.json({
-            ok: true,
-            producto: productoDB
+            res.json({
+                ok: true,
+                producto: productoDB
+            });
+        })
+        .populate('usuario', 'nombre email')
+        .populate('categoria', 'descripcion');
+
+});
+
+
+
+// ============================
+// BUSCA PRODUCTOS
+// ============================
+
+app.get('/producto/buscar/:termino', verificaToken, (req, res) => {
+
+    let termino = req.params.termino;
+
+    let regex = RegExp(termino, 'i');
+
+
+    Producto.find({ nombre: regex })
+        .populate('categoria', 'descripcion')
+        .exec((error, productoDB) => {
+
+            if (error) {
+                return res.status(500).json({
+                    ok: false,
+                    error
+                });
+            }
+
+            res.json({
+                ok: true,
+                producto: productoDB
+            });
         });
-    });
-
 });
 
 // ============================
