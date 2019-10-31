@@ -1,4 +1,3 @@
-
 // =======================================
 // RUTA DE USUARIOS (POST, GET, PUT Y DELETE)
 // ========================================
@@ -11,7 +10,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // LIBRERÍAS DE GOOGLE PARA AUTENTICACIÓN.
-const {OAuth2Client} = require('google-auth-library');
+const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 // NECESITAMOS EL MODELO PARA PODER OBTENER LA INFORMACIÓN DE ESTE, COMO USUARIO Y PASSWORD
@@ -54,7 +53,7 @@ app.post("/login", (req, res) => {
         //PARÁMETRO EXPIRESIN: SEGUNDOS, MINUTOS, HORAS, DÍAS (EXPIRARÁ EN 30 DÍAS)
         let token = jwt.sign({
             usuario: usuarioDB
-        }, process.env.SEMILLA , { expiresIn: process.env.CADUCIDAD_TOKEN });
+        }, process.env.SEMILLA, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
         res.json({ //EN CASO DE QUE TODO ESTÉ CORRECTO
             ok: true,
@@ -71,13 +70,13 @@ app.post("/login", (req, res) => {
 async function verify(token) {
     const ticket = await client.verifyIdToken({
         idToken: token,
-        audience: process.env.CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+        audience: process.env.CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });
     const payload = ticket.getPayload();
 
-    
+
     //POR MEDIO DE PAYLOAD VAMOS A OBTENER LOS DATOS DEL USUARIO DE GOOGLE
 
     return {
@@ -86,90 +85,90 @@ async function verify(token) {
         img: payload.picture,
         google: true
     }
-     
-  }
-  
+
+}
+
 // YA QUE ESTAMOS TOMANDO EL OBJETO GOOGLEUSER QUE ES RETORNADO POR UNA PROMESA
 // PARA OBTENER LOS VALORES DIRECTAMENTE YA QUE ES PROMESA USAMOS LA PALABRA RESERVADA AWAIT
 // DE IGUAL FORMA DEBEMOS MANEJAR LA PARTE DEL ASYNC PARA QUE ESTO SE PUEDA USAR.
-app.post("/google", async (req, res) => {
+app.post("/google", async(req, res) => {
 
     let token = req.body.idtoken;
 
-   let googleUser = await verify(token)
-   .catch(error => {
-       res.status(403).json({
-           ok: false,
-           error: error
-       });
-   });
-
-   // FINDONE LO QUE HACE ES BUSCAR EN EL ESQUEMA USUARIOS SI EXISTE ALGÚN USUARIO CON LAS CREDENCIALES
-   //QUE LE HEMOS PASADO.
-   Usuario.findOne( {email: googleUser.email}, (error, usuarioDB) => {
-
-    if(error){
-        res.status(500).json({
-            ok: false,
-            error: error
-        });
-    };
-
-    if(usuarioDB){ // SI EL USUARIO EXISTE COMPROBAMOS QUE NO ESTÉ AUTENTICADO POR GOOGLE
-
-        if(usuarioDB.google === false){
-            res.status(400).json({
+    let googleUser = await verify(token)
+        .catch(error => {
+            res.status(403).json({
                 ok: false,
-                error: {
-                    message: "Debe usar autenticación normal"
-                }
+                error: error
             });
-        }else{
-           let token = jwt.sign({
-            usuario: usuarioDB
-        }, process.env.SEMILLA , { expiresIn: process.env.CADUCIDAD_TOKEN });
-
-        return res.json({
-            ok: true,
-            usuario: usuarioDB,
-            token: token
         });
 
-        }
-    }else{
-        // SI EL USUARIO NO EXISTE EN NUESTRA BASE DE DATOS
-        // ES DECIR, ES LA PRIMERA VEZ QUE SE AUTENTICA
+    // FINDONE LO QUE HACE ES BUSCAR EN EL ESQUEMA USUARIOS SI EXISTE ALGÚN USUARIO CON LAS CREDENCIALES
+    //QUE LE HEMOS PASADO.
+    Usuario.findOne({ email: googleUser.email }, (error, usuarioDB) => {
 
-        let usuario = new Usuario();
+        if (error) {
+            res.status(500).json({
+                ok: false,
+                error: error
+            });
+        };
 
-        usuario.nombre = googleUser.nombre;
-        usuario.email   = googleUser.email;
-        usuario.img = googleUser.picture;
-        usuario.google = true;
-        usuario.password = ':)';
+        if (usuarioDB) { // SI EL USUARIO EXISTE COMPROBAMOS QUE NO ESTÉ AUTENTICADO POR GOOGLE
 
-        usuario.save(error, usuarioDB => {
-
-            if(error){
+            if (usuarioDB.google === false) {
                 res.status(400).json({
                     ok: false,
-                    error: error
+                    error: {
+                        message: "Debe usar autenticación normal"
+                    }
                 });
-            };
+            } else {
+                let token = jwt.sign({
+                    usuario: usuarioDB
+                }, process.env.SEMILLA, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
-            let token = jwt.sign({
-                usuario: usuarioDB
-            }, process.env.SEMILLA , { expiresIn: process.env.CADUCIDAD_TOKEN });
-    
-            return res.json({
-                ok: true,
-                usuario: usuarioDB,
-                token: token
+                return res.json({
+                    ok: true,
+                    usuario: usuarioDB,
+                    token: token
+                });
+
+            }
+        } else {
+            // SI EL USUARIO NO EXISTE EN NUESTRA BASE DE DATOS
+            // ES DECIR, ES LA PRIMERA VEZ QUE SE AUTENTICA
+
+            let usuario = new Usuario();
+
+            usuario.nombre = googleUser.nombre;
+            usuario.email = googleUser.email;
+            usuario.img = googleUser.picture;
+            usuario.google = true;
+            usuario.password = ':)';
+
+            usuario.save(error, usuarioDB => {
+
+                if (error) {
+                    res.status(400).json({
+                        ok: false,
+                        error: error
+                    });
+                };
+
+                let token = jwt.sign({
+                    usuario: usuarioDB
+                }, process.env.SEMILLA, { expiresIn: process.env.CADUCIDAD_TOKEN });
+
+                return res.json({
+                    ok: true,
+                    usuario: usuarioDB,
+                    token: token
+                });
+
             });
-
-        });
-    }
-});
+        }
+    });
 
 });
 

@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express();
 
+//OBTIENE EL CUERPO DE LAS PETICIONES MIDDLEWARE
 const bodyParser = require('body-parser');
+
+//LIBRERÍA QUE NOS PERMITE CONECTARNOS A MONGODB Y GENERAR ESQUEMAS
 const mongoose = require('mongoose');
+
 const path = require('path');
 require('./config/config'); //VARIABLES GLOBALES!
 
@@ -11,6 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+
 
 //HABILITAR LA CARPETA PUBLIC
 
