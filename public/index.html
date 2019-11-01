@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,50 +9,53 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
     <meta name="google-signin-client_id" content="533922305897-nvfg8qr30vvp3lubfuqbe010vu49bpsj.apps.googleusercontent.com">
-    
+
 
 
     <title>Google Sign in - Demo</title>
 </head>
+
 <body>
+
+
+    <!-- <img src="http://localhost:3000/imagen/usuarios/5db99ca209d7ba1dc025a08a-791.jpg ?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvIjp7InJvbGUiOiJBRE1JTl9ST0xFIiwiZXN0YWRvIjp0cnVlLCJnb29nbGUiOmZhbHNlLCJfaWQiOiI1ZGI5OWJiZjA5ZDdiYTFkYzAyNWEwODkiLCJub21icmUiOiJUZXN0IDIxIiwiZW1haWwiOiJ0ZXN0MjFAZ21haWwuY29tIiwiX192IjowfSwiaWF0IjoxNTcyNTI4NzczLCJleHAiOjE1NzI3MDE1NzN9.X9PXmgmKA5LMDtio8AD7M1zV7ZqhIDc_5y2esncDxnQ"> -->
+
     <!-- BOTÓN PARA INICIAR SESIÓN -->
     <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <a href="#" onclick="signOut();">Sign out</a>  <!-- BOTÓN PARA CERRAR SESIÓN -->
-<script>
-    //FUNCIÓN PARA CERRAR SESIÓN
-  function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-  }
-</script>
-    
-    <script> 
-    
-    // FUNCIÓN PARA INICIAR SESIÓN
-    function onSignIn(googleUser) {
-    var profile = googleUser.getBasicProfile();
-    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log('Name: ' + profile.getName());
-    console.log('Image URL: ' + profile.getImageUrl());
-    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-
-    // GENERACIÓN DEL TOKEN AL MOMENTO DE INICIAR SESIÓN
-    var id_token = googleUser.getAuthResponse().id_token;
-    console.log(id_token);
-        
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/google');
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onload = function() {
-     console.log('Signed in as: ' + xhr.responseText);
-    };
-    xhr.send('idtoken=' + id_token);
+    <a href="#" onclick="signOut();">Sign out</a>
+    <!-- BOTÓN PARA CERRAR SESIÓN -->
+    <script>
+        //FUNCIÓN PARA CERRAR SESIÓN
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function() {
+                console.log('User signed out.');
+            });
         }
+    </script>
 
-        
-    
+    <script>
+        // FUNCIÓN PARA INICIAR SESIÓN
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+            // GENERACIÓN DEL TOKEN AL MOMENTO DE INICIAR SESIÓN
+            var id_token = googleUser.getAuthResponse().id_token;
+            console.log(id_token);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/google');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                console.log('Signed in as: ' + xhr.responseText);
+            };
+            xhr.send('idtoken=' + id_token);
+        }
     </script>
 </body>
+
 </html>
