@@ -28,6 +28,7 @@ let categoriaSchema = new Schema({
         ref: 'Usuario'
     }
 
+
 });
 
 

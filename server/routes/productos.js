@@ -28,6 +28,7 @@ app.get('/producto', verificaToken, (req, res) => {
     Producto.find({ disponible: true })
         .skip(desde)
         .limit(limite)
+        .populate('categoria', 'descripcion')
         .exec((error, productoDB) => {
 
             if (error) {

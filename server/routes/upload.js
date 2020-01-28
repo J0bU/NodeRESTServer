@@ -17,7 +17,7 @@ const path = require('path'); //SABER LA RUTA EN LA QUE ESTOY
 // CARGAR ARCHIVOS A EXPRESS.
 app.use(fileUpload({ useTempFiles: true }));
 
-app.put("/upload/:tipo/:id", (req, res) => {
+app.put('/upload/:tipo/:id', (req, res) => {
 
     let tipo = req.params.tipo;
     let identificador = req.params.id;
